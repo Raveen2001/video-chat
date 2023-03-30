@@ -1,5 +1,11 @@
 {
   "extends": "tsconfig/qwik.json",
   "files": ["./.eslintrc.cjs"],
+  "compilerOptions": {
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+
   "include": ["src"]
 }
