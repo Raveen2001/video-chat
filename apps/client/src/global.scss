@@ -1,12 +1,16 @@
 * {
-  box-sizing: border-box;
-
+  --topbar-height: 12vh;
+  --spacing: 20px;
   --text-color: #383a3d;
   --accent-color: #00bfa6;
+  box-sizing: border-box;
 }
 body {
   margin: 0;
   padding: 0;
+  width: 100dvw;
+  height: 100dvh;
+  // overflow: hidden;
   color: var(--text-color);
   font-family: 'Source Sans Pro', sans-serif;
 }

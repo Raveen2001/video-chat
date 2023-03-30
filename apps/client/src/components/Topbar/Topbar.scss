@@ -1,11 +1,11 @@
 .Topbar {
-  height: 4rem;
+  height: var(--topbar-height);
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: space-between;
   // background-color: red;
-  padding: 10px;
+  padding: var(--spacing);
 
   .logo {
     display: flex;

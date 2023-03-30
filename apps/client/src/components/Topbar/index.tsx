@@ -1,7 +1,9 @@
-import { component$ } from '@builder.io/qwik';
+import { component$, useStyles$ } from '@builder.io/qwik';
 import Timer from '../Timer';
+import styles from './Topbar.scss?inline';
 
 export default component$(() => {
+  useStyles$(styles);
   return (
     <div class="Topbar">
       <div class="logo">
