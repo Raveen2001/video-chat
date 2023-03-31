@@ -1,7 +1,7 @@
 /** @jsxImportSource react */
-
-import { noSerialize, Slot } from '@builder.io/qwik';
 import { qwikify$ } from '@builder.io/qwik-react';
+import MUITypes from '@mui/types';
+import MUISystem from '@mui/system';
 import {
   TextField,
   Dialog,
