@@ -1,5 +1,12 @@
-import { $, component$, QRL, Signal, useSignal } from '@builder.io/qwik';
-import * as React from 'react';
+import {
+  $,
+  component$,
+  QRL,
+  Signal,
+  useSignal,
+  useStyles$,
+  useVisibleTask$,
+} from '@builder.io/qwik';
 import {
   MUIButton,
   MUIDialog,
@@ -7,8 +14,8 @@ import {
   MUIDialogContent,
   MUIDialogContentText,
   MUIDialogTitle,
-  MUITextField,
 } from '~/integrations/react/mui';
+import styles from './NameDialog.scss?inline';
 
 interface NameDialogProps {
   open: Signal<boolean>;
@@ -16,33 +23,46 @@ interface NameDialogProps {
   onConfirm: QRL<() => void>;
 }
 
-export default component$(({ open, onConfirm, name }: NameDialogProps) => {
+export default component$(({ name, open, onConfirm }: NameDialogProps) => {
+  useStyles$(styles);
+  const showError = useSignal(false);
+
   const handleClose = $(() => {
     open.value = false;
   });
 
+  const handleConfirm = $(() => {
+    if (name.value) {
+      console.log('heelo');
+      onConfirm();
+    } else {
+      showError.value = true;
+    }
+  });
+
+  useVisibleTask$(({ track }) => {
+    track(open);
+    showError.value = false;
+  });
+
   return (
-    <div>
-      <MUIDialog open={open.value} onClose$={handleClose}>
+    <MUIDialog open={open.value} onClose$={handleClose}>
+      <div class="NameDialog">
         <MUIDialogTitle>Enter your name</MUIDialogTitle>
         <MUIDialogContent>
           <MUIDialogContentText>
             Please enter your name to continue, we will use this name to
             identify you in the meeting.
           </MUIDialogContentText>
-          <MUITextField
-            value={name?.value}
-            onChange$={(e: any) => {
-              name.value = e.target.value;
-            }}
-            autoFocus
-            margin="dense"
-            id="name"
-            type="name"
+          <input
+            type="text"
+            bind:value={name}
+            class="name-input"
             placeholder="Name"
-            fullWidth
-            variant="outlined"
           />
+          <span class="helper-text">
+            {showError.value ? 'Please enter your name' : ''}
+          </span>
         </MUIDialogContent>
         <MUIDialogActions>
           <MUIButton
@@ -54,7 +74,7 @@ export default component$(({ open, onConfirm, name }: NameDialogProps) => {
             Cancel
           </MUIButton>
           <MUIButton
-            host:onClick$={onConfirm}
+            host:onClick$={handleConfirm}
             sx={{
               color: 'var(--accent-color)',
             }}
@@ -62,7 +82,7 @@ export default component$(({ open, onConfirm, name }: NameDialogProps) => {
             Confirm
           </MUIButton>
         </MUIDialogActions>
-      </MUIDialog>
-    </div>
+      </div>
+    </MUIDialog>
   );
 });

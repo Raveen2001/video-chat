@@ -10,7 +10,9 @@ import {
   DialogContentText,
   DialogTitle,
   Button,
+  Fab,
 } from '@mui/material';
+import { CallEnd as CallEndIcon } from '@mui/icons-material';
 
 export const MUIDialog = qwikify$(Dialog);
 export const MUITextField = qwikify$(TextField);
@@ -19,3 +21,5 @@ export const MUIDialogContent = qwikify$(DialogContent);
 export const MUIDialogContentText = qwikify$(DialogContentText);
 export const MUIDialogTitle = qwikify$(DialogTitle);
 export const MUIButton = qwikify$(Button);
+export const MUIFab = qwikify$(Fab);
+export const MUICallEndIcon = qwikify$(CallEndIcon);

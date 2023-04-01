@@ -14,3 +14,11 @@ body {
   color: var(--text-color);
   font-family: 'Source Sans Pro', sans-serif;
 }
+
+.main {
+  height: calc(100vh - var(--topbar-height));
+
+  & > :first-child {
+    padding: var(--spacing);
+  }
+}

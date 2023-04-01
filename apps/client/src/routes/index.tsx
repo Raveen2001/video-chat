@@ -4,26 +4,27 @@ import {
   useSignal,
   useStyles$,
   useTask$,
+  useContext,
 } from '@builder.io/qwik';
 import styles from './Home.scss?inline';
 import NewMeetingIconUrl from '~/assets/new-meeting.png?url';
 import NameDialog from '~/components/NameDialog';
 import { MUIButton } from '~/integrations/react/mui';
+import { useNavigate } from '@builder.io/qwik-city';
+import { VideoChatContext } from '~/root';
 export default component$(() => {
   useStyles$(styles);
   const meetingId = useSignal<string>();
   const nameDialogOpen = useSignal<boolean>(false);
   const name = useSignal<string>('');
+  const { peer } = useContext(VideoChatContext);
+
   const selectedType = useSignal<'new' | 'join'>('new');
+  const nav = useNavigate();
 
   const onNameConfirm = $(() => {
     nameDialogOpen.value = false;
-    // singlePageNavigate()
-  });
-
-  useTask$(({ track }) => {
-    track(() => [name]);
-    console.log('name', name.value);
+    nav(`/${peer.value.id}`);
   });
 
   return (

@@ -4,7 +4,9 @@ export default component$(() => {
   return (
     <>
       <Topbar />
-      <Slot />
+      <div class="main">
+        <Slot />
+      </div>
     </>
   );
 });
