@@ -11,20 +11,20 @@ import NewMeetingIconUrl from '~/assets/new-meeting.png?url';
 import NameDialog from '~/components/NameDialog';
 import { MUIButton } from '~/integrations/react/mui';
 import { useNavigate } from '@builder.io/qwik-city';
-import { VideoChatContext } from '~/root';
+import { getUserId, initailizePeer } from '~/network';
 export default component$(() => {
   useStyles$(styles);
   const meetingId = useSignal<string>();
   const nameDialogOpen = useSignal<boolean>(false);
   const name = useSignal<string>('');
-  const { peer } = useContext(VideoChatContext);
 
   const selectedType = useSignal<'new' | 'join'>('new');
   const nav = useNavigate();
 
   const onNameConfirm = $(() => {
     nameDialogOpen.value = false;
-    nav(`/${peer.value.id}`);
+    const roomId = selectedType.value === 'new' ? getUserId() : meetingId.value;
+    nav(`/${roomId}`);
   });
 
   return (
@@ -39,8 +39,9 @@ export default component$(() => {
           <button
             class="new-meeting-btn"
             onClick$={() => {
-              nameDialogOpen.value = true;
+              // nameDialogOpen.value = true;
               selectedType.value = 'new';
+              onNameConfirm();
             }}
           >
             <img src={NewMeetingIconUrl} alt="new" />
@@ -58,8 +59,9 @@ export default component$(() => {
               <button
                 class="join-btn"
                 onClick$={() => {
-                  nameDialogOpen.value = true;
+                  // nameDialogOpen.value = true;
                   selectedType.value = 'join';
+                  onNameConfirm();
                 }}
               >
                 join

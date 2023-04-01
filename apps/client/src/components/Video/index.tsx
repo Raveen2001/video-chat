@@ -1,23 +1,13 @@
-import {
-  NoSerialize,
-  component$,
-  useSignal,
-  useStylesScoped$,
-  useVisibleTask$,
-} from '@builder.io/qwik';
+import { Slot, component$, useStylesScoped$ } from '@builder.io/qwik';
 import styles from './Video.scss?inline';
 
 interface IVideoProps {
-  stream: NoSerialize<MediaStream>;
+  video: any;
+  name: string;
 }
 
-export default component$(({ stream }: IVideoProps) => {
+export default component$<any>(({ name, video }: IVideoProps) => {
   useStylesScoped$(styles);
-  const videoRef = useSignal<HTMLVideoElement>();
 
-  useVisibleTask$(() => {
-    if (videoRef.value) videoRef.value.srcObject = stream as any;
-  });
-
-  return <video class="Video" ref={videoRef}></video>;
+  return <div class="Video">{video}</div>;
 });

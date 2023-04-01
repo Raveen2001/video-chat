@@ -1,43 +1,17 @@
-import {
-  Signal,
-  component$,
-  createContextId,
-  noSerialize,
-  useContextProvider,
-  useSignal,
-  useVisibleTask$,
-} from '@builder.io/qwik';
+import { component$, useVisibleTask$ } from '@builder.io/qwik';
 import {
   QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
 } from '@builder.io/qwik-city';
 import { RouterHead } from './components/router-head/router-head';
-import { Peer } from 'peerjs';
+
 import './global.scss';
+import { initailizePeer } from './network';
 
-interface IVideoChatContextSProps {
-  peer: Signal<Peer>;
-}
-export const VideoChatContext =
-  createContextId<IVideoChatContextSProps>('video-chat.peer');
 export default component$(() => {
-  /**
-   * The root of a QwikCity site always start with the <QwikCityProvider> component,
-   * immediately followed by the document's <head> and <body>.
-   *
-   * Dont remove the `<head>` and `<body>` elements.
-   */
-
-  const peer = useSignal<Peer>();
-  useContextProvider(VideoChatContext, { peer });
-
   useVisibleTask$(() => {
-    peer.value = noSerialize(new Peer());
-
-    peer.value?.on('open', (id) => {
-      console.log('My peer ID is: ' + id);
-    });
+    initailizePeer();
   });
 
   return (
