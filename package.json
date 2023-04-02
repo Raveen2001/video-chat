@@ -10,7 +10,8 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "peer": "peerjs --port 8080 --host 0.0.0.0"
   },
   "devDependencies": {
     "eslint-config-custom": "workspace:*",
@@ -20,6 +21,8 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "peer": "^1.0.0"
+  },
   "packageManager": "pnpm@7.27.1"
 }

@@ -21,6 +21,7 @@ export default component$(() => {
   useStyles$(styles);
 
   const addStreamToGallery = $((stream: MediaStream) => {
+    console.log('addStreamToGallery', stream);
     const video = document.createElement('video');
     video.srcObject = stream;
     video.autoplay = true;
@@ -30,20 +31,50 @@ export default component$(() => {
     document.querySelector('.gallery')?.appendChild(video);
   });
 
-  // turn off your audio and video
-  useVisibleTask$(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true, audio: true })
-      .then((stream) => {
-        if (myVideoRef.value) {
-          myVideoRef.value.srcObject = stream;
-          // call the room owner
-          callToUser(roomOwnerId, stream, addStreamToGallery);
+  const createFakeStream = $(() => {
+    const mediaStream = new MediaStream();
 
-          // send your stream to other users
-          answerToCall(stream, addStreamToGallery);
-        }
-      });
+    // Create a fake video track
+    const canvas = document.createElement('canvas');
+    canvas.width = 640;
+    canvas.height = 480;
+    const videoStream = canvas.captureStream(30);
+    const videoTrack = videoStream.getVideoTracks()[0];
+    mediaStream.addTrack(videoTrack);
+
+    // Create a fake audio track
+    const audioContext = new AudioContext();
+    const audioNode = audioContext.createMediaStreamDestination();
+    const audioTrack = audioNode.stream.getAudioTracks()[0];
+    mediaStream.addTrack(audioTrack);
+
+    return mediaStream;
+  });
+
+  // turn off your audio and video
+  useVisibleTask$(async () => {
+    // navigator.mediaDevices
+    //   .getUserMedia({ video: true, audio: true })
+    //   .then((stream) => {
+    //     if (myVideoRef.value) {
+    //       myVideoRef.value.srcObject = stream;
+    //       // call the room owner
+    //       callToUser(roomOwnerId, stream, addStreamToGallery);
+
+    //       // send your stream to other users
+    //       answerToCall(stream, addStreamToGallery);
+    //     }
+    //   });
+
+    const stream = await createFakeStream();
+    if (myVideoRef.value) {
+      myVideoRef.value.srcObject = stream;
+      // call the room owner
+      callToUser(roomOwnerId, stream, addStreamToGallery);
+
+      // send your stream to other users
+      answerToCall(stream, addStreamToGallery);
+    }
   });
 
   // call the room owner

@@ -6,8 +6,8 @@ let peer: Peer | undefined = undefined;
 export const initailizePeer = () => {
   if (isBrowser) {
     peer = new Peer({
-      host: '/',
-      port: 3001,
+      host: '192.168.18.8',
+      port: 8000,
     });
 
     peer.on('open', (id) => {
@@ -24,8 +24,7 @@ export const callToUser = (
   onAnswer: (stream: MediaStream) => void,
 ) => {
   if (userId === peer?.id) return;
-
-  console.log('calling', userId);
+  console.log('calling', userId, stream);
   const call = peer?.call(userId, stream);
 
   call?.on('stream', (remoteStream) => {
