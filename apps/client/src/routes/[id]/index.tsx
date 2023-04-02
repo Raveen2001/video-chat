@@ -4,55 +4,31 @@ import {
   useContext,
   useSignal,
   useStyles$,
-  useStylesScoped$,
   useVisibleTask$,
 } from '@builder.io/qwik';
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import styles from './Room.scss?inline';
 import { MUICallEndIcon, MUIFab } from '~/integrations/react/mui';
-import Video from '~/components/Video';
-import { answerToCall, callToUser } from '~/network';
+import { createFakeStream, addStreamToGallery } from '~/utils';
+import { PeerContext } from '~/root';
 
 export default component$(() => {
   const myVideoRef = useSignal<HTMLVideoElement>();
 
   const { id: roomOwnerId } = useLocation().params;
   const nav = useNavigate();
+  const peer = useContext(PeerContext);
+
   useStyles$(styles);
 
-  const addStreamToGallery = $((stream: MediaStream) => {
-    console.log('addStreamToGallery', stream);
-    const video = document.createElement('video');
-    video.srcObject = stream;
-    video.autoplay = true;
-    video.classList.add('video');
-    video.muted = true;
-    video.playsInline = true;
-    document.querySelector('.gallery')?.appendChild(video);
-  });
-
-  const createFakeStream = $(() => {
-    const mediaStream = new MediaStream();
-
-    // Create a fake video track
-    const canvas = document.createElement('canvas');
-    canvas.width = 640;
-    canvas.height = 480;
-    const videoStream = canvas.captureStream(30);
-    const videoTrack = videoStream.getVideoTracks()[0];
-    mediaStream.addTrack(videoTrack);
-
-    // Create a fake audio track
-    const audioContext = new AudioContext();
-    const audioNode = audioContext.createMediaStreamDestination();
-    const audioTrack = audioNode.stream.getAudioTracks()[0];
-    mediaStream.addTrack(audioTrack);
-
-    return mediaStream;
-  });
-
   // turn off your audio and video
-  useVisibleTask$(async () => {
+  useVisibleTask$(async ({ track }) => {
+    track(peer);
+    console.log('hello');
+
+    if (!peer.value.isInitialized) return;
+    console.log('passed');
+
     // navigator.mediaDevices
     //   .getUserMedia({ video: true, audio: true })
     //   .then((stream) => {
@@ -70,18 +46,12 @@ export default component$(() => {
     if (myVideoRef.value) {
       myVideoRef.value.srcObject = stream;
       // call the room owner
-      callToUser(roomOwnerId, stream, addStreamToGallery);
+      peer.value.call?.(roomOwnerId, stream, addStreamToGallery);
 
       // send your stream to other users
-      answerToCall(stream, addStreamToGallery);
+      peer.value.answer?.(stream, addStreamToGallery);
     }
   });
-
-  // call the room owner
-  // get the stream from the room owner
-  useVisibleTask$(() => {});
-
-  // answer calls from other users
 
   return (
     <div class="Room">

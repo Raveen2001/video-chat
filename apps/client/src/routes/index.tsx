@@ -9,11 +9,12 @@ import {
 import styles from './Home.scss?inline';
 import NewMeetingIconUrl from '~/assets/new-meeting.png?url';
 import NameDialog from '~/components/NameDialog';
-import { MUIButton } from '~/integrations/react/mui';
 import { useNavigate } from '@builder.io/qwik-city';
-import { getUserId, initailizePeer } from '~/network';
+import { PeerContext } from '~/root';
 export default component$(() => {
   useStyles$(styles);
+
+  const peer = useContext(PeerContext);
   const meetingId = useSignal<string>();
   const nameDialogOpen = useSignal<boolean>(false);
   const name = useSignal<string>('');
@@ -22,8 +23,10 @@ export default component$(() => {
   const nav = useNavigate();
 
   const onNameConfirm = $(() => {
+    if (!peer.value.isInitialized) return;
     nameDialogOpen.value = false;
-    const roomId = selectedType.value === 'new' ? getUserId() : meetingId.value;
+    const roomId =
+      selectedType.value === 'new' ? peer.value.peer?.id : meetingId.value;
     nav(`/${roomId}`);
   });
 

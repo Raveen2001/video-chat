@@ -1,4 +1,12 @@
-import { component$, useVisibleTask$ } from '@builder.io/qwik';
+import {
+  Signal,
+  component$,
+  createContextId,
+  noSerialize,
+  useContextProvider,
+  useSignal,
+  useVisibleTask$,
+} from '@builder.io/qwik';
 import {
   QwikCityProvider,
   RouterOutlet,
@@ -7,11 +15,45 @@ import {
 import { RouterHead } from './components/router-head/router-head';
 
 import './global.scss';
-import { initailizePeer } from './network';
+import { answerToCall, callToUser, initailizePeer } from './network';
+import Peer, { PeerErrorType } from 'peerjs';
+import { MUISnackbar } from './integrations/react/mui';
+
+interface IPeerContext {
+  isInitialized: boolean;
+  peer?: Peer;
+  call?: ReturnType<typeof callToUser>;
+  answer?: ReturnType<typeof answerToCall>;
+}
+
+export const PeerContext = createContextId<Signal<IPeerContext>>('peer');
 
 export default component$(() => {
-  useVisibleTask$(() => {
-    initailizePeer();
+  const isSnackbarOpen = useSignal<boolean>(false);
+  const peerSignal = useSignal<IPeerContext>({
+    isInitialized: false,
+    peer: undefined,
+    call: undefined,
+    answer: undefined,
+  });
+
+  useContextProvider(PeerContext, peerSignal);
+
+  useVisibleTask$(async () => {
+    initailizePeer((peer) => {
+      peerSignal.value = {
+        isInitialized: true,
+        peer: noSerialize(peer),
+        call: callToUser(peer),
+        answer: answerToCall(peer),
+      };
+
+      peer.on('error', (error: any) => {
+        if (error.type === 'peer-unavailable') {
+          console.error('--------> ', error.type);
+        }
+      });
+    });
   });
 
   return (
@@ -36,7 +78,6 @@ export default component$(() => {
       </head>
       <body lang="en">
         <RouterOutlet />
-
         <ServiceWorkerRegister />
       </body>
     </QwikCityProvider>

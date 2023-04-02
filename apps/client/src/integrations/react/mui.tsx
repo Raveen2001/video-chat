@@ -11,6 +11,7 @@ import {
   DialogTitle,
   Button,
   Fab,
+  Snackbar,
 } from '@mui/material';
 import { CallEnd as CallEndIcon } from '@mui/icons-material';
 
@@ -23,3 +24,4 @@ export const MUIDialogTitle = qwikify$(DialogTitle);
 export const MUIButton = qwikify$(Button);
 export const MUIFab = qwikify$(Fab);
 export const MUICallEndIcon = qwikify$(CallEndIcon);
+export const MUISnackbar = qwikify$(Snackbar);
