@@ -26,6 +26,11 @@ io.on('connection', (socket: any) => {
     socket.broadcast.to(roomId).emit('user-connected', userId);
   });
 
+  socket.on('leave-room', (roomId: string, userId: string) => {
+    console.log('leave-room', roomId, userId);
+    socket.broadcast.to(roomId).emit('user-disconnected', userId);
+  });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
