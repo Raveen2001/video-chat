@@ -1,4 +1,5 @@
 import {
+  $,
   Signal,
   component$,
   createContextId,
@@ -12,21 +13,36 @@ import {
   RouterOutlet,
   ServiceWorkerRegister,
 } from '@builder.io/qwik-city';
-import { RouterHead } from './components/router-head/router-head';
+import { RouterHead } from '~/components/router-head/router-head';
 
 import './global.scss';
-import { answerToCall, callToUser, initailizePeer } from './network';
-import Peer, { PeerErrorType } from 'peerjs';
-import { MUISnackbar } from './integrations/react/mui';
+import {
+  answerToCall,
+  callToUser,
+  destroyPeer,
+  initailizePeer,
+} from '~/utils/peer';
+import Peer from 'peerjs';
+import { initializeSocket } from './utils/socket';
+import { Socket } from 'socket.io-client';
 
 interface IPeerContext {
   isInitialized: boolean;
   peer?: Peer;
+
   call?: ReturnType<typeof callToUser>;
   answer?: ReturnType<typeof answerToCall>;
+
+  destroy?: ReturnType<typeof destroyPeer>;
+}
+
+interface ISocketContext {
+  isInitialized: boolean;
+  socket?: Socket;
 }
 
 export const PeerContext = createContextId<Signal<IPeerContext>>('peer');
+export const socketContext = createContextId<Signal<ISocketContext>>('socket');
 
 export default component$(() => {
   const isSnackbarOpen = useSignal<boolean>(false);
@@ -37,23 +53,42 @@ export default component$(() => {
     answer: undefined,
   });
 
+  const socketSignal = useSignal<ISocketContext>({
+    isInitialized: false,
+    socket: undefined,
+  });
+
   useContextProvider(PeerContext, peerSignal);
+  useContextProvider(socketContext, socketSignal);
+
+  const onSocketInit = $((socket: Socket) => {
+    if (!socket.connected) return;
+    socketSignal.value = {
+      isInitialized: true,
+      socket: noSerialize(socket),
+    };
+    console.log(socket, 'initialized');
+  });
+
+  const onPeerInit = $((peer: Peer) => {
+    peerSignal.value = {
+      isInitialized: true,
+      peer: noSerialize(peer),
+      call: callToUser(peer),
+      answer: answerToCall(peer),
+      destroy: destroyPeer(peer),
+    };
+
+    peer.on('error', (error: any) => {
+      if (error.type === 'peer-unavailable') {
+        console.error('--------> ', error.type);
+      }
+    });
+  });
 
   useVisibleTask$(async () => {
-    initailizePeer((peer) => {
-      peerSignal.value = {
-        isInitialized: true,
-        peer: noSerialize(peer),
-        call: callToUser(peer),
-        answer: answerToCall(peer),
-      };
-
-      peer.on('error', (error: any) => {
-        if (error.type === 'peer-unavailable') {
-          console.error('--------> ', error.type);
-        }
-      });
-    });
+    initializeSocket(onSocketInit);
+    initailizePeer(onPeerInit);
   });
 
   return (

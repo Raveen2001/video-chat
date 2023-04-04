@@ -11,6 +11,7 @@ import NewMeetingIconUrl from '~/assets/new-meeting.png?url';
 import NameDialog from '~/components/NameDialog';
 import { useNavigate } from '@builder.io/qwik-city';
 import { PeerContext } from '~/root';
+import { createRoom } from '~/utils/server';
 export default component$(() => {
   useStyles$(styles);
 
@@ -22,11 +23,10 @@ export default component$(() => {
   const selectedType = useSignal<'new' | 'join'>('new');
   const nav = useNavigate();
 
-  const onNameConfirm = $(() => {
-    if (!peer.value.isInitialized) return;
+  const onNameConfirm = $(async () => {
     nameDialogOpen.value = false;
     const roomId =
-      selectedType.value === 'new' ? peer.value.peer?.id : meetingId.value;
+      selectedType.value === 'new' ? await createRoom() : meetingId.value;
     nav(`/${roomId}`);
   });
 
