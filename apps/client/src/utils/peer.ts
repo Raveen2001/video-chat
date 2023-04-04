@@ -19,7 +19,7 @@ export const callToUser = (peer: Peer) => {
     (
       userId: string,
       stream: MediaStream,
-      onAnswer: (stream: MediaStream) => void,
+      onAnswer: (userId: string, stream: MediaStream) => void,
     ) => {
       if (userId === peer?.id) return;
 
@@ -28,25 +28,30 @@ export const callToUser = (peer: Peer) => {
 
       call?.once('stream', (remoteStream) => {
         // console.log('answer from ', userId, remoteStream);
-        onAnswer(remoteStream);
+        onAnswer(userId, remoteStream);
       });
     },
   );
 };
 
 export const answerToCall = (peer: Peer) => {
-  return $((stream: MediaStream, onCall: (stream: MediaStream) => void) => {
-    console.log('This function called');
-    peer?.on('call', (call) => {
-      // console.log('call from ', call);
-      call.answer(stream);
+  return $(
+    (
+      stream: MediaStream,
+      onCall: (userId: string, stream: MediaStream) => void,
+    ) => {
+      console.log('This function called');
+      peer?.on('call', (call) => {
+        // console.log('call from ', call);
+        call.answer(stream);
 
-      call.once('stream', (remoteStream) => {
-        // console.log('answer ', remoteStream);
-        onCall(remoteStream);
+        call.once('stream', (remoteStream) => {
+          // console.log('answer ', remoteStream);
+          onCall(call.peer, remoteStream);
+        });
       });
-    });
-  });
+    },
+  );
 };
 
 // destroy the peer connection

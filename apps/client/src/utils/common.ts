@@ -1,14 +1,26 @@
 import { $ } from '@builder.io/qwik';
 
-export const addStreamToGallery = $((stream: MediaStream) => {
+const connectedUsers: Record<string, string> = {};
+
+export const addStreamToGallery = $((userId: string, stream: MediaStream) => {
   console.log('addStreamToGallery', stream);
   const video = document.createElement('video');
   video.srcObject = stream;
   video.autoplay = true;
+  video.id = stream.id;
   video.classList.add('video');
   video.muted = true;
   video.playsInline = true;
   document.querySelector('.gallery')?.appendChild(video);
+
+  connectedUsers[userId] = stream.id;
+});
+
+export const removeStreamFromGallery = $((id: string) => {
+  const steamId = connectedUsers[id];
+  console.log('removeStreamFromGallery', steamId);
+  const video = document.getElementById(steamId);
+  video?.remove();
 });
 
 export const createFakeStream = $(() => {

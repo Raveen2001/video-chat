@@ -10,20 +10,13 @@ import {
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import styles from './Room.scss?inline';
 import { MUICallEndIcon, MUIFab } from '~/integrations/react/mui';
-import { createFakeStream, addStreamToGallery } from '~/utils/common';
+import { addStreamToGallery, removeStreamFromGallery } from '~/utils/common';
 import { PeerContext, socketContext } from '~/root';
-import {
-  answerToCall,
-  callToUser,
-  destroyPeer,
-  initailizePeer,
-} from '~/utils/peer';
-import Peer from 'peerjs';
 
 export default component$(() => {
   const myVideoRef = useSignal<HTMLVideoElement>();
-  const isInitialized = useSignal<boolean>(false);
   const { roomId } = useLocation().params;
+  const currentRoomId = useSignal<string>();
 
   const nav = useNavigate();
   const peerContext = useContext(PeerContext);
@@ -37,6 +30,7 @@ export default component$(() => {
     track(socket);
 
     if (!peerContext.value.isInitialized || !socket.value.isInitialized) return;
+    currentRoomId.value = roomId;
     console.log('passed');
 
     navigator.mediaDevices
@@ -48,7 +42,7 @@ export default component$(() => {
           console.log('here', socket.value.socket);
           socket.value.socket?.emit(
             'join-room',
-            roomId,
+            currentRoomId.value,
             peerContext.value.peer?.id,
           );
 
@@ -59,7 +53,7 @@ export default component$(() => {
 
           // when the user is disconnected
           socket.value.socket?.on('user-disconnected', (userId) => {
-            // todo: remove the video from the gallery
+            removeStreamFromGallery(userId);
           });
 
           // send your stream to other users
@@ -72,6 +66,11 @@ export default component$(() => {
       myStream.getTracks().forEach((track) => {
         track.stop();
       });
+      socket.value.socket?.emit(
+        'leave-room',
+        currentRoomId.value,
+        peerContext.value.peer?.id,
+      );
       peerContext.value.peer?.removeAllListeners();
       socket.value.socket?.removeAllListeners();
     });
