@@ -34,7 +34,12 @@ export const callToUser = (peer: Peer) => {
       });
 
       call?.once('stream', (remoteStream) => {
-        // console.log('answer from ', userId, remoteStream);
+        console.log(
+          'what is the stream',
+          remoteUserId,
+          remoteUserName,
+          remoteStream,
+        );
         onAnswer(remoteUserId, remoteUserName, remoteStream);
       });
     },
