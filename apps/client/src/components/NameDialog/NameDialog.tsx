@@ -1,8 +1,7 @@
 import {
   $,
   component$,
-  QRL,
-  Signal,
+  type QRL,
   useSignal,
   useStyles$,
   useVisibleTask$,

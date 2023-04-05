@@ -1,6 +1,5 @@
 import {
-  NoSerialize,
-  Signal,
+  type NoSerialize,
   component$,
   useStylesScoped$,
 } from '@builder.io/qwik';

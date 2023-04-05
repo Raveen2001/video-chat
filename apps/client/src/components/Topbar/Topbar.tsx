@@ -16,7 +16,7 @@ export default component$(() => {
       <Timer />
 
       <div class="about">
-        <a href="https://www.raveen.in" target="_blank">
+        <a href="https://www.raveen.in" target="_blank" rel="noreferrer">
           About developer
         </a>
       </div>

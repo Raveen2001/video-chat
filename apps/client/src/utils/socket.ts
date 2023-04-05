@@ -1,5 +1,6 @@
 import { isBrowser } from '@builder.io/qwik/build';
-import { Socket, io } from 'socket.io-client';
+import { io } from 'socket.io-client';
+import type { Socket } from 'socket.io-client';
 
 export const initializeSocket = (onInit: (socket: Socket) => void) => {
   if (isBrowser) {

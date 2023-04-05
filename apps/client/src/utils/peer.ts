@@ -1,6 +1,6 @@
 import Peer from 'peerjs';
 import { isBrowser } from '@builder.io/qwik/build';
-import { $ } from '@builder.io/qwik';
+import { $, type NoSerialize } from '@builder.io/qwik';
 
 export const initailizePeer = (onInit: (peer: Peer) => void) => {
   if (isBrowser) {
@@ -8,13 +8,13 @@ export const initailizePeer = (onInit: (peer: Peer) => void) => {
       // debug: 3,
     });
 
-    peer.on('open', (id) => {
+    peer.on('open', () => {
       onInit(peer);
     });
   }
 };
 
-export const callToUser = (peer: Peer) => {
+export const callToUser = (peer: NoSerialize<Peer>) => {
   return $(
     (
       myUserId: string,
@@ -34,19 +34,13 @@ export const callToUser = (peer: Peer) => {
       });
 
       call?.once('stream', (remoteStream) => {
-        console.log(
-          'what is the stream',
-          remoteUserId,
-          remoteUserName,
-          remoteStream,
-        );
         onAnswer(remoteUserId, remoteUserName, remoteStream);
       });
     },
   );
 };
 
-export const answerToCall = (peer: Peer) => {
+export const answerToCall = (peer: NoSerialize<Peer>) => {
   return $(
     (
       stream: MediaStream,
@@ -67,7 +61,7 @@ export const answerToCall = (peer: Peer) => {
 };
 
 // destroy the peer connection
-export const destroyPeer = (peer: Peer) => {
+export const destroyPeer = (peer: NoSerialize<Peer>) => {
   return $(() => {
     peer?.destroy();
   });

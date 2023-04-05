@@ -1,6 +1,5 @@
 import {
   $,
-  NoSerialize,
   component$,
   noSerialize,
   useContext,
@@ -11,16 +10,9 @@ import {
 import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import styles from './Room.scss?inline';
 import { MUICallEndIcon, MUIFab } from '~/integrations/react/mui';
-import {
-  addStreamToGallery,
-  createFakeStream,
-  removeStreamFromGallery,
-} from '~/utils/common';
 import { PeerContext, SocketContext } from '~/root';
 import NameDialog from '~/components/NameDialog';
-import Loading from '~/components/LoadIng/Loading';
-import UserVideoCard from '~/components/UserVideoCard/UserVideoCard';
-import Gallery, { TUserDetail } from '~/components/Gallery/Gallery';
+import Gallery, { type TUserDetail } from '~/components/Gallery/Gallery';
 
 export default component$(() => {
   useStyles$(styles);

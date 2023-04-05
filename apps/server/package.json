@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon server.ts"
+    "dev": "nodemon src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
   },
   "keywords": [],
   "author": "",

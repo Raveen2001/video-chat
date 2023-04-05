@@ -1,6 +1,7 @@
 import {
   $,
-  Signal,
+  type NoSerialize,
+  type Signal,
   component$,
   createContextId,
   noSerialize,
@@ -22,13 +23,13 @@ import {
   destroyPeer,
   initailizePeer,
 } from '~/utils/peer';
-import Peer from 'peerjs';
+import type Peer from 'peerjs';
 import { initializeSocket } from './utils/socket';
-import { Socket } from 'socket.io-client';
+import { type Socket } from 'socket.io-client';
 
 interface IPeerContext {
   isInitialized: boolean;
-  peer?: Peer;
+  peer?: NoSerialize<Peer>;
 
   call?: ReturnType<typeof callToUser>;
   answer?: ReturnType<typeof answerToCall>;
@@ -38,14 +39,13 @@ interface IPeerContext {
 
 interface ISocketContext {
   isInitialized: boolean;
-  socket?: Socket;
+  socket?: NoSerialize<Socket>;
 }
 
 export const PeerContext = createContextId<Signal<IPeerContext>>('peer');
 export const SocketContext = createContextId<Signal<ISocketContext>>('socket');
 
 export default component$(() => {
-  const isSnackbarOpen = useSignal<boolean>(false);
   const peerSignal = useSignal<IPeerContext>({
     isInitialized: false,
     peer: undefined,
@@ -71,12 +71,13 @@ export default component$(() => {
   });
 
   const onPeerInit = $((peer: Peer) => {
+    const nonSerializedPeer = noSerialize(peer);
     peerSignal.value = {
       isInitialized: true,
-      peer: noSerialize(peer),
-      call: callToUser(peer),
-      answer: answerToCall(peer),
-      destroy: destroyPeer(peer),
+      peer: nonSerializedPeer,
+      call: callToUser(nonSerializedPeer),
+      answer: answerToCall(nonSerializedPeer),
+      destroy: destroyPeer(nonSerializedPeer),
     };
 
     peer.on('error', (error: any) => {

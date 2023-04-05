@@ -5,7 +5,7 @@ import {
   useVisibleTask$,
 } from '@builder.io/qwik';
 import styles from './UserVideoCard.scss?inline';
-import { TUserDetail } from '../Gallery/Gallery';
+import type { TUserDetail } from '../Gallery/Gallery';
 
 interface IUserVideoCard {
   userDetail: TUserDetail;
