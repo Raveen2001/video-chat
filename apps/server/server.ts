@@ -20,10 +20,9 @@ app.get('/create-room', (req, res) => {
 });
 
 io.on('connection', (socket: any) => {
-  socket.on('join-room', (roomId: string, userId: string) => {
-    console.log('join-room', roomId, userId);
+  socket.on('join-room', (roomId: string, userId: string, userName: string) => {
     socket.join(roomId);
-    socket.broadcast.to(roomId).emit('user-connected', userId);
+    socket.broadcast.to(roomId).emit('user-connected', userId, userName);
   });
 
   socket.on('leave-room', (roomId: string, userId: string) => {

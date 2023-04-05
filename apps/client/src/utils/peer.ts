@@ -5,7 +5,7 @@ import { $ } from '@builder.io/qwik';
 export const initailizePeer = (onInit: (peer: Peer) => void) => {
   if (isBrowser) {
     const peer = new Peer({
-      debug: 3,
+      // debug: 3,
     });
 
     peer.on('open', (id) => {
@@ -17,18 +17,25 @@ export const initailizePeer = (onInit: (peer: Peer) => void) => {
 export const callToUser = (peer: Peer) => {
   return $(
     (
-      userId: string,
-      stream: MediaStream,
-      onAnswer: (userId: string, stream: MediaStream) => void,
+      myUserId: string,
+      myUserName: string,
+      myStream: MediaStream,
+      remoteUserId: string,
+      remoteUserName: string,
+      onAnswer: (userId: string, name: string, stream: MediaStream) => void,
     ) => {
-      if (userId === peer?.id) return;
+      if (remoteUserId === peer?.id) return;
 
-      // console.log('calling', userId, stream);
-      const call = peer?.call(userId, stream);
+      const call = peer?.call(remoteUserId, myStream, {
+        metadata: {
+          id: myUserId,
+          name: myUserName,
+        },
+      });
 
       call?.once('stream', (remoteStream) => {
         // console.log('answer from ', userId, remoteStream);
-        onAnswer(userId, remoteStream);
+        onAnswer(remoteUserId, remoteUserName, remoteStream);
       });
     },
   );
@@ -38,16 +45,16 @@ export const answerToCall = (peer: Peer) => {
   return $(
     (
       stream: MediaStream,
-      onCall: (userId: string, stream: MediaStream) => void,
+      onCall: (userId: string, userName: string, stream: MediaStream) => void,
     ) => {
       console.log('This function called');
       peer?.on('call', (call) => {
         // console.log('call from ', call);
         call.answer(stream);
+        const { name: remoteUserName, id: remoteUserId } = call.metadata;
 
         call.once('stream', (remoteStream) => {
-          // console.log('answer ', remoteStream);
-          onCall(call.peer, remoteStream);
+          onCall(remoteUserId, remoteUserName, remoteStream);
         });
       });
     },

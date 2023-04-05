@@ -1,6 +1,8 @@
 import {
   $,
+  NoSerialize,
   component$,
+  noSerialize,
   useContext,
   useSignal,
   useStyles$,
@@ -10,45 +12,73 @@ import { useLocation, useNavigate } from '@builder.io/qwik-city';
 import styles from './Room.scss?inline';
 import { MUICallEndIcon, MUIFab } from '~/integrations/react/mui';
 import { addStreamToGallery, removeStreamFromGallery } from '~/utils/common';
-import { PeerContext, socketContext } from '~/root';
+import { PeerContext, SocketContext } from '~/root';
 import NameDialog from '~/components/NameDialog';
 import Loading from '~/components/LoadIng/Loading';
 
+type TUserDetails = {
+  name: string;
+  stream: NoSerialize<MediaStream>;
+  isVideoOn: boolean;
+  isAudioOn: boolean;
+};
+
 export default component$(() => {
   useStyles$(styles);
-  const myVideoRef = useSignal<HTMLVideoElement>();
   const { roomId } = useLocation().params;
-  const currentRoomId = useSignal<string>();
-
   const nav = useNavigate();
+
   const peerContext = useContext(PeerContext);
-  const socket = useContext(socketContext);
-  const nameSignal = useSignal<string>('');
+  const socketContext = useContext(SocketContext);
+
+  const myVideoRef = useSignal<HTMLVideoElement>();
+  const currentRoomId = useSignal<string>();
+  const connectedClientsDetails = useSignal<Record<string, TUserDetails>>({});
+  const name = useSignal<string>('');
   const isNameDialogOpen = useSignal<boolean>(false);
 
   useVisibleTask$(() => {
     isNameDialogOpen.value = true;
   });
 
-  const onNameConfirm = $(async (name: string) => {
+  const onNameConfirm = $(async (userName: string) => {
     isNameDialogOpen.value = false;
-    nameSignal.value = name;
+    name.value = userName;
+  });
+
+  const onRemoteUserConnect = $(
+    async (userId: string, name: string, stream: MediaStream) => {
+      connectedClientsDetails.value = {
+        ...connectedClientsDetails.value,
+        [userId]: {
+          name: name,
+          stream: noSerialize(stream),
+          isVideoOn: true,
+          isAudioOn: true,
+        },
+      };
+    },
+  );
+
+  const onRemoteUserDisconnect = $(async (userId: string) => {
+    const temp = { ...connectedClientsDetails.value };
+    delete temp[userId];
+    connectedClientsDetails.value = temp;
   });
 
   // turn off your audio and video
   useVisibleTask$(async ({ track, cleanup }) => {
     track(peerContext);
-    track(socket);
-    track(nameSignal);
+    track(socketContext);
+    track(name);
 
     if (
       !peerContext.value.isInitialized ||
-      !socket.value.isInitialized ||
-      nameSignal.value.length === 0
+      !socketContext.value.isInitialized ||
+      name.value.length === 0
     )
       return;
 
-    console.log('name', nameSignal.value);
     currentRoomId.value = roomId;
 
     navigator.mediaDevices
@@ -57,25 +87,44 @@ export default component$(() => {
         if (myVideoRef.value) {
           myVideoRef.value.srcObject = stream;
 
-          console.log('here', socket.value.socket);
-          socket.value.socket?.emit(
+          console.log('here', socketContext.value.socket);
+          socketContext.value.socket?.emit(
             'join-room',
             currentRoomId.value,
             peerContext.value.peer?.id,
+            name.value,
           );
 
           // call the user when they are connected
-          socket.value.socket?.on('user-connected', (userId) => {
-            peerContext.value.call?.(userId, stream, addStreamToGallery);
-          });
+          socketContext.value.socket?.on(
+            'user-connected',
+            (remoteUserId, remoteUserName) => {
+              connectedClientsDetails.value = {
+                ...connectedClientsDetails.value,
+                [remoteUserId]: {
+                  name: remoteUserName,
+                  isVideoOn: true,
+                  isAudioOn: true,
+                },
+              };
+              peerContext.value.call?.(
+                peerContext.value.peer!.id,
+                name.value,
+                stream,
+                remoteUserId,
+                remoteUserName,
+                onRemoteUserConnect,
+              );
+            },
+          );
 
           // when the user is disconnected
-          socket.value.socket?.on('user-disconnected', (userId) => {
-            removeStreamFromGallery(userId);
+          socketContext.value.socket?.on('user-disconnected', (userId) => {
+            onRemoteUserDisconnect(userId);
           });
 
           // send your stream to other users
-          peerContext.value.answer?.(stream, addStreamToGallery);
+          peerContext.value.answer?.(stream, onRemoteUserConnect);
         }
       });
 
@@ -84,18 +133,23 @@ export default component$(() => {
       myStream.getTracks().forEach((track) => {
         track.stop();
       });
-      socket.value.socket?.emit(
+      socketContext.value.socket?.emit(
         'leave-room',
         currentRoomId.value,
         peerContext.value.peer?.id,
       );
       peerContext.value.peer?.removeAllListeners();
-      socket.value.socket?.removeAllListeners();
+      socketContext.value.socket?.removeAllListeners();
     });
   });
 
-  return <Loading text="Waiting for connections" />;
-  if (nameSignal.value.length === 0) {
+  useVisibleTask$(({ track }) => {
+    track(connectedClientsDetails);
+    console.log('000====> ', connectedClientsDetails.value);
+  });
+
+  //   return <Loading text="Waiting for connections" />;
+  if (name.value.length === 0) {
     return (
       <NameDialog open={isNameDialogOpen.value} onConfirm={onNameConfirm} />
     );

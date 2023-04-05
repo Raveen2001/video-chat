@@ -42,7 +42,7 @@ interface ISocketContext {
 }
 
 export const PeerContext = createContextId<Signal<IPeerContext>>('peer');
-export const socketContext = createContextId<Signal<ISocketContext>>('socket');
+export const SocketContext = createContextId<Signal<ISocketContext>>('socket');
 
 export default component$(() => {
   const isSnackbarOpen = useSignal<boolean>(false);
@@ -59,7 +59,7 @@ export default component$(() => {
   });
 
   useContextProvider(PeerContext, peerSignal);
-  useContextProvider(socketContext, socketSignal);
+  useContextProvider(SocketContext, socketSignal);
 
   const onSocketInit = $((socket: Socket) => {
     if (!socket.connected) return;
