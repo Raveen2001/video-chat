@@ -1,6 +1,6 @@
 {
   "name": "video-chat",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "workspaces": [
     "apps/*",
@@ -9,9 +9,9 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "start": "turbo run start",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "peer": "peerjs --port 8080 --host 0.0.0.0"
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
     "eslint-config-custom": "workspace:*",
@@ -21,8 +21,6 @@
   "engines": {
     "node": ">=14.0.0"
   },
-  "dependencies": {
-    "peer": "^1.0.0"
-  },
+  "dependencies": {},
   "packageManager": "pnpm@7.27.1"
 }

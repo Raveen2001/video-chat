@@ -3,11 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.ts",
-  "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.ts",
-    "build": "tsc",
-    "start": "node dist/server.js"
+    "dev": "nodemon server.ts",
+    "start": "ts-node server.ts"
   },
   "keywords": [],
   "author": "",
@@ -19,12 +17,15 @@
     "@types/uuid": "^9.0.1",
     "express": "^4.18.2",
     "ts-node": "^10.9.1",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.3",
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "nodemon": "^2.0.22",
     "socket.io": "^4.6.1",
     "uuid": "^9.0.0"
+  },
+  "ts-node": {
+    "esm": true
   }
 }
