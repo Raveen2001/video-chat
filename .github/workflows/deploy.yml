@@ -13,7 +13,8 @@ jobs:
           node-version: '18'
 
       - name: Install pnpm
-        run: npm install -g pnpm
+        run: npm install -g pnpm@7.27.1
+        run: pnpm --version
 
       - name: Install dependencies
         run: pnpm install
