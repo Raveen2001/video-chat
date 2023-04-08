@@ -24,8 +24,5 @@
     "cors": "^2.8.5",
     "socket.io": "^4.6.1",
     "uuid": "^9.0.0"
-  },
-  "ts-node": {
-    "esm": true
   }
 }
