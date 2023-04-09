@@ -15,7 +15,7 @@ const io = new IO(server, {
 
 app.use(CORS());
 
-app.get('/create-room', (req, res) => {
+app.get('/create-room', (req, res: Express.Response) => {
   res.send({ roomId: UUIDv4() });
 });
 

@@ -1,5 +1,5 @@
 {
-  "name": "npm",
+  "name": "video-chat",
   "version": "0.0.0",
   "private": true,
   "workspaces": [
@@ -10,16 +10,18 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "lint": "turbo run lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "start": "turbo run start"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
-    "prettier": "latest",
-    "turbo": "latest"
+    "prettier": "latest"
   },
   "engines": {
     "node": ">=15.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "turbo": "latest"
+  },
   "packageManager": "npm@9.5.0"
 }
