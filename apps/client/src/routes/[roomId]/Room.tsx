@@ -13,6 +13,7 @@ import { MUICallEndIcon, MUIFab } from '~/integrations/react/mui';
 import { PeerContext, SocketContext } from '~/root';
 import NameDialog from '~/components/NameDialog';
 import Gallery, { type TUserDetail } from '~/components/Gallery/Gallery';
+import CopyRoomId from '~/components/CopyRoomId/CopyRoomId';
 
 export default component$(() => {
   useStyles$(styles);
@@ -155,6 +156,8 @@ export default component$(() => {
       >
         <MUICallEndIcon />
       </MUIFab>
+
+      <CopyRoomId roomId={roomId} />
     </div>
   );
 });
