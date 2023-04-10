@@ -11,18 +11,17 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "peer": "peerjs --port 8080 --host 0.0.0.0"
+    "start": "turbo run start"
   },
   "devDependencies": {
-    "eslint-config-custom": "workspace:*",
-    "prettier": "latest",
-    "turbo": "latest"
+    "eslint-config-custom": "*",
+    "prettier": "latest"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=15.0.0"
   },
   "dependencies": {
-    "peer": "^1.0.0"
+    "turbo": "latest"
   },
-  "packageManager": "pnpm@7.27.1"
+  "packageManager": "npm@9.5.0"
 }

@@ -14,6 +14,8 @@ export default component$(() => {
     isLoading.value = true;
     try {
       const roomId = type === 'new' ? await createRoom() : meetingId.value;
+      console.log('room id', roomId);
+      if (!roomId) return;
       nav(`/${roomId}`);
     } catch (err) {
       console.log(err);
