@@ -27,6 +27,9 @@ export default component$(({ userDetail }: IUserVideoCard) => {
   return (
     <div class="UserVideoCard">
       <video class="user-video" ref={videoRef} />
+      <div class="user-detail">
+        <span class="user-name">{userDetail.name}</span>
+      </div>
     </div>
   );
 });

@@ -26,12 +26,12 @@ export default component$(() => {
   const myVideoRef = useSignal<HTMLVideoElement>();
   const currentRoomId = useSignal<string>();
   const connectedClientsDetails = useSignal<Record<string, TUserDetail>>({});
-  const name = useSignal<string>('raveen');
+  const name = useSignal<string>('');
   const isNameDialogOpen = useSignal<boolean>(false);
 
-  //   useVisibleTask$(() => {
-  //     isNameDialogOpen.value = true;
-  //   });
+  useVisibleTask$(() => {
+    isNameDialogOpen.value = true;
+  });
 
   const onNameConfirm = $(async (userName: string) => {
     isNameDialogOpen.value = false;

@@ -27,7 +27,8 @@ export default component$(({ roomId }: ICopyRoomIdProps) => {
       sx={{
         width: 'max-content',
         position: 'absolute',
-        bottom: 'var(--spacing)',
+        right: 'var(--spacing)',
+        top: 'var(--topbar-height)',
       }}
     >
       <MUICardContent
